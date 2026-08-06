@@ -86,10 +86,10 @@
 	
 
 # Statistical tests/models and how to pick one
-* **The right test is determined by:
+* **The right test is determined by:**
 	1.  what type each variable is
 	2. What question shape is being asked
-* **Step 1: Classify the outcome (dependent variable)
+* **Step 1: Classify the outcome (dependent variable)**
 	* For **continuous variables** like growth rate, **regression-based tests** are used
 	* For **categorical variables** like survival, we can use **logistic regression or chi square tests**
 	* For count e.g., number of events, we use **Poisson-type models**
@@ -181,7 +181,8 @@
 		* std = 7.23 cm. This indicates the amount of variation in kelp blade lengths around the mean (16.52 cm). The blade lengths typically vary by about 7.23 cm around the mean
 		* The top 10 smallest values (3.6 - 5.8 cm) are associated with kelp that mostly died early (between t1 and t3, with none making it to t4), while the large ones survived to t4
 
-![[Pasted image 20260805102551.png]]
+
+![Pasted image](Pasted%20image%20260805102551.png)
 
 
 ##### Step 2: Treatment comparisons - does our variable (initial blade length) differ across treatments?
