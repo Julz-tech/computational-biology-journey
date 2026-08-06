@@ -1,5 +1,116 @@
-## Question 1: Do initial morphological characteristics predict subsequent growth rate, and does this relationship differ among treatments? (continuous data hence regression analysis)
-* Predictor (X): initial growth at t1
+# Choice of plots
+* Determined by **type of variable** and **questions we're asking**
+* Questions to ask:
+	* How many variables are involved?
+	* What type of variables are they? (continuous or categorical)
+	* What question do we want to answer?
+		* Distribution
+		* Comparison
+		* Relationship
+		* Composition
+	
+
+| Question                                                      | Variables Involved           | Standard plot                     | Example from this project                                                                                        |
+| ------------------------------------------------------------- | ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Distribution of one continuous variable                       | 1 continuous                 | Histogram (or density plot)       | Shape of initial_length_bl overall (how initial_length_bl is distributed among the kelp regardless of treatment) |
+| Compare one continuous variable across categories             | 1 continuous + 1 categorical | Box plot (or violin plot)         | Blade length by treatment group                                                                                  |
+| Relationship between two continuous variables                 | 2 continuous                 | Scatter plot                      | Blade length vs. growth rate                                                                                     |
+| Relationship between two continuous variables, split by group | 2 continuous + 1 categorical | Scatter plot with hue=/col=       | Blade length vs. growth rate, colored by temperature                                                             |
+| Counts/frequency of categoriesv                               | 1 categorical                | Bar plot                          | Number of kelp per treatment group                                                                               |
+| Change over time                                              | 1 continuous + time          | Line plot                         | Blade length across t1→t2→t3→t4 for the same individuals                                                         |
+| Composition / proportion of a whole                           | categorical parts of a whole | Stacked bar or pie (rarely ideal) | Proportion died vs. survived per treatment                                                                       |
+## Reading a multi-color scatter plot
+* Has 5 dimensions of info:
+	* x position
+	* y position
+	* Color
+	* Shape
+	* Regression line
+* Need to go through the layers in order
+* We will use this example:
+![[Pasted image 20260806095505.png]]
+* **Step 1: Name every visual channel and what it represents**
+	* x axis = initial blade length (continuous)
+	* y axis = t1 to t2 growth rate (continuous)
+	* Color = temperature (10/14/18°C)
+	* Marker shape = surface (● natural, ✕ disrupted)
+	* Black line = a fitted trend, not raw data
+	* Therefore, the plot answers questions at multiple levels:
+		* By temperature alone
+		* By surface alone
+		* By temperature and surface combined
+	* **Phrase:** This plot has initial blade length on the x axis, growth rate at t1 and t2 on the y axis and displays both temperature as color and surface as shapes
+* **Step 2: Read the overall trend first, ignoring every group**
+	* Look at the trend line only
+	* This answers - Is there any relationship?
+	* Here, the line rises from left to right, indicating positive association
+	* **Phrase:** At a glance, there appears to be a positive association between initial blade length and growth rate at t1 and t2
+* **Step 3: Understand what the gray band means**
+	* The shaded region is a confidence band around the regression line's estimate
+	* It reflects uncertainty in where the true average line sits, not the spread of the individual data points around the line
+	* The band seems to widen at the edges (low and high blade lengths) reflects that there are fewer data points there, hence the line position is less certain in these regions
+	* **Phrase:** The shaded band reflects uncertainty in the fitted trend within the edges since we have fewer data points but is more confident in the middle due to more data points
+* **Step 4: Assess linearity visually, don't just declare it**
+	* Does the line stay "close" to the data points for the entire length of the x-axis, or does it only fit well in the middle and drift away from the dots at the ends?
+		* If a single straight line looks like a decent fit _everywhere_ (left side, middle, right side) → roughly linear
+		- If the data points clearly hug the bottom, then swoop upward steeply, then flatten out at the top (like a rainbow or an "S" shape) → not linear, because no single straight line could hug that shape from end to end
+		![[Pasted image 20260806114412.png]]
+	* **Phrase:** The relationship appears approximately linear across the observed range, with no obvious curvature
+* **Step 5: Bring in ONE encoding at a time - color first**
+	* scan the whole x-axis and ask whether the color groups maintain a consistent vertical offset from each other across the _entire_ range, not just at one spot
+	* **Question**: 
+		* Do blue (10°C), orange (14°C), and green (18°C) points consistently occupy the same _vertical bands_ above/below each other? 
+		* This tells us whether temperature shifts growth rate _independent of_ blade length
+		* If the answer stays the same as you slide all the way across, that's a real, consistent group difference
+		* If the answer flips partway through (green is below blue on the left, but above blue on the right), that's not a consistent effect (this indicates an **interaction**) 
+	* **Phrase:** Holding blade length roughly constant, growth rate at 10°C tends to sit lower than growth rates at 14 and 18°C for natural surface kelp, while growth rate at 18°C tends to sit lower than at 14°C and 10°C for disrupted kelp 
+* **Step 6: Bring in the second encoding - shape**
+	* Isolate shape only, ignoring color
+	* Do circles (natural) sit consistently above/below x's (disrupted)?
+	* **Phrase:** Natural surface kelp tend to sit above disrupted kelp at similar x values (natural surface kelp tend to have a higher growth rate)
+* **Step 7: Combine both encodings**
+	* Look at color and shape _together_
+	* e.g., "green x's" (18°C disrupted) versus "green dots" (18°C natural) specifically, versus "blue x's" (10°C disrupted) versus "blue dots" (10°C natural)
+	* This is where we actually see whether the surface effect _depends on_ temperature 
+	* **Phrase:** At 10°C, natural surface kelp appears to have a lower growth rate, compared to disrupted kelp. This pattern, however isn't consistent across temperatures, with natural surface kelp appearing to have a higher growth rate than disrupted kelp at higher temperatures (14 and 18°C)
+* **Step 8: Outliers - flag but don't let them drive the story**
+	* Note extreme points (e.g., the two points near 2.0-2.25 cm/day growth) explicitly
+	* Describe them as individual observations, not as evidence of a group-level pattern
+	* **Phrase:** Two individual growth rates, near 2.0-2.25 cm/day, stand out as unusually high, both in natural surface kelp, at 10 and 18°C
+* **Step 9: State the scope and limits explicitly**
+	* Close every visual read with an honest scope statement 
+	* **Phrases:**
+		* This is a visual/descriptive pattern only; it has not yet been statistically tested
+		* This plot suggests there is an overall linear positive relationship between initial blade length and growth rate at t1 and t2, which is also temperature and surface dependent and can be evaluated by a 
+		* Correlation visible here does not establish which variable is driving the other
+	
+
+# Statistical tests/models and how to pick one
+* **The right test is determined by:
+	1.  what type each variable is
+	2. What question shape is being asked
+* **Step 1: Classify the outcome (dependent variable)
+	* For **continuous variables** like growth rate, **regression-based tests** are used
+	* For **categorical variables** like survival, we can use **logistic regression or chi square tests**
+	* For count e.g., number of events, we use **Poisson-type models**
+* **Step 2: Classify predictors**
+	* **Continuous predictor** e.g., blade length → **correlation** or **regression**
+	* **Categorical predictor** e.g., temperature groups, surface → **group-comparison tests** (t-test, ANOVA) 
+	* **Mix of both, plus interactions** → this is where you land, and it's why you've been using `smf.ols` formulas rather than a "named" test
+
+| Question                                                               | Outcome Type | Predictor Type           | Standard Test                                      |
+| ---------------------------------------------------------------------- | ------------ | ------------------------ | -------------------------------------------------- |
+| Do two groups differ in a continuous measure?                          | Continuous   | 1 categorical, 2 levels  | t-test                                             |
+| Do 3+ groups differ in a continuous measure?                           | Continuous   | 1 categorical, 3+ levels | ANOVA                                              |
+| Do two continuous variables move together?                             | Continuous   | Continuous               | Correlation (Pearson/Spearman)                     |
+| Does a continuous predictor explain/predict a continuous outcome?      | Continuous   | Continuous               | Simple linear regression                           |
+| Does the outcome depend on multiple predictors, possibly interacting?  | Continuous   | Mix, with interactions   | Multiple regression (what you're doing)            |
+| Same as above, but individuals are grouped (tanks) and not independent | Continuous   | Mix, with interactions   | Mixed-effects regression (random effect for tank)  |
+| Does a categorical outcome (survived/died) depend on predictors?       | Binary       | Any                      | Logistic regression                                |
+| Are two categorical variables associated?                              | Categorical  | Categorical              | Chi-square test                                    |
+
+# Question 1: Do initial morphological characteristics predict subsequent growth rate, and does this relationship differ among treatments? (continuous data hence regression analysis)
+* Predictor (X): initial growth at t1 (continuous variable)
 * Response (Y): growth rate
 * If the line graph slopes upward, kelp that were initially larger tend to grow faster
 * If the line graph slopes downward, kelp that were initially larger tend to grow slower
@@ -23,9 +134,9 @@
 1. Test each initial metric individually
 2. Multivariate approach combining all metrics
 
-##### Step 1: Check shape of distribution of initial size across the kelp
-* **Chart used:** histogram
-* Purpose: sorts each kelp into difference bins according to size
+##### Step 1: Check shape of distribution of initial blade length across the kelp
+* **Chart used:** histogram - we're checking a single variable distribution
+* Purpose: sorts each kelp into difference bins according to blade length
 * **x axis** = bins (size ranges e.g., 0-2 cm)
 * Need to choose equal and sensible bin sizes to show representation well (not too large, not too small)
 * **y axis** = count of how many kelp fall into a specific bin
@@ -73,9 +184,10 @@
 ![[Pasted image 20260805102551.png]]
 
 
-##### Step 2: Treatment comparisons
-* ***Chart used:** Box plot
-* Purpose: visualizes percentiles (refer to percentiles above)
+##### Step 2: Treatment comparisons - does our variable (initial blade length) differ across treatments?
+* **Chart used:** Box plot - compares a continuous variable across categories
+* **Purpose**: visualizes percentiles (refer to percentiles above)
+* **Limitation:** Only shows five 'landmarks' - min, max, Q1, median and Q3. Doesn't show a group's distribution, e.g., if it is bimodal, like a histogram does. This is instead captured by a violin plot
 * Basic box plot:
 		○  outlier
         |
@@ -183,3 +295,31 @@
 		* 1 outlier at 18°C
 	* Wild kelp showed no outliers at 10°C and only a single large outlier at 18°C
 ![[Pasted image 20260805134900.png]]
+
+##### Step 3: Verify relationship - Does initial blade length predict t1-t2 growth rate, and does that relationship differ among treatments?
+###### Objective I
+* **Required:** Kelp with both initial blade length and a t1-t2 growth rate measurement = 134/171 kelp:
+
+| Treatment       | Count |
+| --------------- | ----- |
+| kelp_wild10nat  | 30    |
+| kelp_wild18nat  | 30    |
+| kelp_wild18disr | 29    |
+| kelp_wild10disr | 15    |
+| kelp_wild14disr | 15    |
+| kelp_wild14nat  | 15    |
+
+* **Plot used:** Scatter plot with colors for treatments and regression line laid over
+* **Purpose:** The scatter plot shows us the relationship between two continuous variables (initial_blade_length and growth_rate_t1t2), split by treatment (categorical), hence the colors - **Is there a relationship?**
+* The regression line laid over gives a quick visual summary of the raw relationship, same as the median, Q1 and Q3 lines in a box plot, so that we can see the trend at a glance
+* **Visual Impressions (association not proof of cause, i.e., no statistical validation yet):**
+	* This plot shows initial blade length on the x-axis and growth rate (t1 to t2) on the y-axis. Color shows temperature, and shape shows surface type (natural vs. disrupted)
+	* Overall, bigger kelp at the start tend to have faster growth rates
+	* The relationship looks roughly linear - a single straight line fits the data reasonably well across the whole range, without an obvious curve
+	* The gray shaded band shows how confident we are in the trend line's position. It is narrower in the middle (more data points there) and wider at the edges (fewer data points, so less certainty about exactly where the line sits)
+	* **Comparing temperatures:** for natural-surface kelp, growth rate is lowest at 10°C and higher at 14°C and 18°C. For disrupted-surface kelp, the opposite happens; growth rate is highest at 10°C and drops at 18°C
+	* **Comparing surface:** At 10°C, disrupted kelp  grow slightly faster than natural kelp. But at 14°C and 18°C, this flips, with natural kelp growing faster than disrupted kelp, indicating surface effect isn't fixed but dependent on temperature
+	* Two natural surface kelp stand out with unusually high growth rates (around 2.0–2.25 cm/day), with one at 10°C and another at 18°C
+	* This plot suggests initial blade length has an overall positive relationship with growth rate, and that this relationship may depend on temperature and surface
+	* We can test this properly using a **regression model that lets the effect of blade length, temperature, and surface (and their interactions) all be estimated at once, while accounting for kelp being grouped within tanks** (a mixed-effects model)
+	![[Pasted image 20260806093509.png]]
