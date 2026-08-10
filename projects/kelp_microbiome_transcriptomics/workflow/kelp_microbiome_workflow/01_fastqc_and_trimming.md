@@ -6,12 +6,12 @@
 * [fastqc help](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/)
 
 ## Summary report analysis (multiqc)
-### **General statistics
+### **General statistics**
 * %GC ranges from 42% - 49% (can be attributed to the differences in microbial species in each sample)
 * Read length dropped from 101bp to ~99bp after trimming
 * Total sequences range from 64.7 million to 110.1 million
 
-### **Per-base sequence quality 
+### **Per-base sequence quality **
 * Shows Phred quality across read position
 * **Phred score Q = −10·log₁₀(error probability):** 
 	* Q20 = 1 error in 100
@@ -38,7 +38,7 @@
 * Majority of  reads need to have a high average quality score with no large bumps at the lower quality values
 * For our data, this is true
 
-### **Per Base Sequence Content
+### **Per Base Sequence Content**
 * Always gives a FAIL for RNA-seq data - the first 10-12 bases result from ‘random’ hexamer priming that occurs during RNA-seq library preparation
 * **Random hexamer priming** is a method used to start the synthesis of complementary DNA (cDNA) from RNA
 	* Instead of using one primer (**short piece of DNA that provides a starting point for reverse transcriptase to begin making DNA**) that binds to a specific sequence, it uses a **mixture of millions of short, 6-nucleotide primers** that can bind at many different locations along RNA molecules
@@ -52,7 +52,7 @@
 * FastQC detects this unequal base composition and flags it as a **Per Base Sequence Content** warning or fail
 * This is true for our data since it is RNA seq
 
-### **Per Sequence GC Content
+### **Per Sequence GC Content**
 * GC distribution over all sequences - For each read, what percentage of its bases are G or C?
 * Note whether the GC content of the central peak corresponds to the [expected % GC for the organism](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2909565/)
 * The distribution should be normal (most fragments naturally have 42% - 58% which is near average hence normal distribution) unless **over-represented sequences** (sharp peaks on a normal distribution) or **contamination with another organism** (broad peak)
@@ -67,7 +67,7 @@
 	* Sharp peaks suggest a large fraction of reads are coming from a limited set of highly similar sequences e.g., rRNA, rather than a diverse transcript pool (RNA-seq does not sample every transcript equally)
 
 
-### **Sequence Duplication Levels
+### **Sequence Duplication Levels**
 * Measures how many times the **same exact sequence read** appears in the sequencing data
 * Most reads **should** be unique
 * Duplication may occur due to:
