@@ -1,4 +1,7 @@
+# Steps for data analysis
+![[Pasted image 20260811103238.png|481]]
 # Choice of plots
+![[Pasted image 20260811112735.png]]
 * Determined by **type of variable** and **questions we're asking**
 * Questions to ask:
 	* How many variables are involved?
@@ -109,13 +112,12 @@
 | Does a categorical outcome (survived/died) depend on predictors?       | Binary       | Any                      | Logistic regression                                |
 | Are two categorical variables associated?                              | Categorical  | Categorical              | Chi-square test                                    |
 
-# Question 1: Do initial morphological characteristics predict subsequent growth rate, and does this relationship differ among treatments? (continuous data hence regression analysis)
-* Predictor (X): initial growth at t1 (continuous variable)
+# Question 1: Does initial morphological characteristics predict subsequent growth rate, and does this relationship differ among treatments? We follow data analysis steps outlined above
+### The Data
+* Data = initial blade length and growth rate (continuous)
+* Predictor (X): initial blade length 
 * Response (Y): growth rate
-* If the line graph slopes upward, kelp that were initially larger tend to grow faster
-* If the line graph slopes downward, kelp that were initially larger tend to grow slower
-- Treatment is then added to check whether these line graphs have different slopes 
-- We analyze each time interval separately (how did growth change at each phase?):
+* We analyze each time interval separately (how did growth change at each phase?):
 	* t1 - t2: growth before the heatwave
 	* t2 - t3: growth during the heatwave period
 	* t3 - t4: growth during recovery
@@ -129,23 +131,19 @@
 	* growth_rate_t1t2
 	* growth_rate_t2t3
 	* growth_rate_t3t4
-
-#### Approach:
-1. Test each initial metric individually
-2. Multivariate approach combining all metrics
-
-##### Step 1: Check shape of distribution of initial blade length across the kelp
+* Treatment is then added to check whether these line graphs have different slopes 
+##### Step 1: Check shape of distribution of initial blade length across the kelp (How the data behaves)
 * **Chart used:** histogram - we're checking a single variable distribution
 * Purpose: sorts each kelp into difference bins according to blade length
-* **x axis** = bins (size ranges e.g., 0-2 cm)
-* Need to choose equal and sensible bin sizes to show representation well (not too large, not too small)
+* **x axis** = bins of initial blade length (size ranges e.g., 0-2 cm)
+	* Need to choose equal and sensible bin sizes to show representation well (not too large, not too small)
 * **y axis** = count of how many kelp fall into a specific bin
 * **Shape** = how the peaks are shaped
-* Here, we have **bimodal distribution** (2 peaks instead of one smooth bell curve (**normal/unimodaldistribution**))
-* Bimodal means we have two different groups combined into one column and each group has its own "typical size"
-* We have one hump around 9-11 cm, a dip around 13-15 cm, a _second_ hump around 16-19 cm, then a gradual decline down to a nearly empty region around 32-35 cm, with a few outliers up near 37-38 cm
-* This means we're combining 2 different starting sizes
-* Most kelp seem to start at ~10cm with very few at ~36 cm (lots of variability in initial blade length)
+	* Here, we have **bimodal distribution** (2 peaks instead of one smooth bell curve (**normal/unimodaldistribution**))
+	* Bimodal means we have two different groups combined into one column and each group has its own "typical size"
+	* We have one hump around 9-11 cm, a dip around 13-15 cm, a _second_ hump around 16-19 cm, then a gradual decline down to a nearly empty region around 32-35 cm, with a few outliers up near 37-38 cm
+	* This means we're combining 2 different starting sizes
+	* Most kelp seem to start at ~10cm with very few at ~36 cm (lots of variability in initial blade length)
 * **Basic stats**:
 	1. **Percentiles**
 		* If we lined up data from smallest to largest, what value marks the point where x% of the data falls below it?
@@ -184,7 +182,7 @@
 ![[Pasted image 20260805102551.png]]
 
 
-##### Step 2: Treatment comparisons - does our variable (initial blade length) differ across treatments?
+##### Treatment comparisons - does our variable (initial blade length) differ across treatments?
 * **Chart used:** Box plot - compares a continuous variable across categories
 * **Purpose**: visualizes percentiles (refer to percentiles above)
 * **Limitation:** Only shows five 'landmarks' - min, max, Q1, median and Q3. Doesn't show a group's distribution, e.g., if it is bimodal, like a histogram does. This is instead captured by a violin plot
@@ -296,8 +294,18 @@
 	* Wild kelp showed no outliers at 10°C and only a single large outlier at 18°C
 ![[Pasted image 20260805134900.png]]
 
-##### Step 3: Verify relationship - Does initial blade length predict t1-t2 growth rate, and does that relationship differ among treatments?
-###### Objective I
+##### Step 2: Verify relationship - Does initial blade length predict t1-t2 growth rate, and does that relationship differ among treatments? (Statistical learning)
+* We use data from above to make inferences
+* Here, we use **supervised learning** since we have **input (Initial blade length)** and **output or target (growth rate)**, that is **already measured**. The goal is to learn the relationship between the two so that we can predict growth rate for new kelp from initial blade length
+	* We use the above data and its shape to give us a model which we will use to infer the relationship
+	* Since **growth rate (our target) is continuous**, we use **regression models**:
+		* **Linear Regression**
+			* Predicts outcome using one predictor
+			* Here, we're predicting growth rate from initial length (one predictor)
+		* **Multiple Linear Regression**
+			* Predicts outcome using two or more predictors 
+			* This will be used later when we add more variables to predict growth rate
+###### Objective I - Temperature x Surface
 * **Required:** Kelp with both initial blade length and a t1-t2 growth rate measurement = 134/171 kelp:
 
 | Treatment       | Count |
@@ -309,17 +317,130 @@
 | kelp_wild14disr | 15    |
 | kelp_wild14nat  | 15    |
 
-* **Plot used:** Scatter plot with colors for treatments and regression line laid over
-* **Purpose:** The scatter plot shows us the relationship between two continuous variables (initial_blade_length and growth_rate_t1t2), split by treatment (categorical), hence the colors - **Is there a relationship?**
-* The regression line laid over gives a quick visual summary of the raw relationship, same as the median, Q1 and Q3 lines in a box plot, so that we can see the trend at a glance
-* **Visual Impressions (association not proof of cause, i.e., no statistical validation yet):**
+* **Plot used:** **Scatter plot** with **colors for treatments** and **regression line** laid over
+* **Purpose:** The scatter plot shows us the **relationship between two continuous variables** (initial_blade_length and growth_rate_t1t2), split by treatment (categorical), hence the colors - **Is there a relationship?**
+* The regression line laid over gives a **quick visual summary of the raw relationship**, same as the median, Q1 and Q3 lines in a box plot, so that we can see the trend at a glance
+* **Visual Impressions (association is not proof of cause, i.e., no statistical validation yet):**
 	* This plot shows initial blade length on the x-axis and growth rate (t1 to t2) on the y-axis. Color shows temperature, and shape shows surface type (natural vs. disrupted)
-	* Overall, bigger kelp at the start tend to have faster growth rates
-	* The relationship looks roughly linear - a single straight line fits the data reasonably well across the whole range, without an obvious curve
-	* The gray shaded band shows how confident we are in the trend line's position. It is narrower in the middle (more data points there) and wider at the edges (fewer data points, so less certainty about exactly where the line sits)
-	* **Comparing temperatures:** for natural-surface kelp, growth rate is lowest at 10°C and higher at 14°C and 18°C. For disrupted-surface kelp, the opposite happens; growth rate is highest at 10°C and drops at 18°C
-	* **Comparing surface:** At 10°C, disrupted kelp  grow slightly faster than natural kelp. But at 14°C and 18°C, this flips, with natural kelp growing faster than disrupted kelp, indicating surface effect isn't fixed but dependent on temperature
-	* Two natural surface kelp stand out with unusually high growth rates (around 2.0–2.25 cm/day), with one at 10°C and another at 18°C
-	* This plot suggests initial blade length has an overall positive relationship with growth rate, and that this relationship may depend on temperature and surface
-	* We can test this properly using a **regression model that lets the effect of blade length, temperature, and surface (and their interactions) all be estimated at once, while accounting for kelp being grouped within tanks** (a mixed-effects model)
+	* **Conclusions from the plot:**
+		* Overall, bigger kelp at the start tend to have faster growth rates
+		* The relationship looks roughly linear - a single straight line fits the data reasonably well across the whole range, without an obvious curve
+		* The gray shaded band shows **how confident we are in the trend line's position**. It is narrower in the middle (more data points there) and wider at the edges (fewer data points, so less certainty about exactly where the line sits)
+		* **Comparing temperatures:** for natural-surface kelp, growth rate is lowest at 10°C and higher at 14°C and 18°C. For disrupted-surface kelp, the opposite happens; growth rate is highest at 10°C and drops at 18°C
+		* **Comparing surface:** At 10°C, disrupted kelp  grow slightly faster than natural kelp. But at 14°C and 18°C, this flips, with natural kelp growing faster than disrupted kelp, indicating surface effect isn't fixed but dependent on temperature
+		* Two natural surface kelp stand out with unusually high growth rates (around 2.0–2.25 cm/day), with one at 10°C and another at 18°C
+	* This plot suggests **initial blade length has an overall positive relationship with growth rate**, and that **this relationship may depend on temperature and surface**
+	* We can test this properly using a **multiple linear regression model that lets the effect of blade length, temperature, and surface (and their interactions) all be estimated at once, while accounting for kelp being grouped within tanks** (a mixed-effects model)
 	![[Pasted image 20260806093509.png]]
+
+* We have established initial blade length affects growth and that the relationship differs among treatments
+* To determine **if the relationship between initial blade length and growth rate truly differs between the treatments**, we can draw two separate plots - one for natural surface and another for disrupted surface kelp:
+	![[Pasted image 20260811114414.png]]
+* **Step 1: What is being displayed:** This scatter plot, like the one above, has initial blade length on the x axis and growth rate on the y, with different colors representing different temperatures for each surface and a regression line to visualize the trend
+* **Natural Surface Kelp**
+	* **Step 2: Overall trend**
+		* There's a **positive association between initial blade length and growth rate** (larger kelp at t1 tend to have faster t1→t2 growth) 
+		* This positive direction **holds at all three temperatures**
+		* **What differs** between temperatures is the **overall growth-rate level**, which is described in Step 5
+	* **Step 3: Band around regression lines**
+		* The bands all appear wider on the ends where there are less values, than the middle, reflecting some uncertainty in the regression line 
+	* **Step 4: Assess linearity**
+		* For **all three temperatures**, the relationship appears roughly linear 
+		* A straight line fits reasonably well across the range, without an obvious curve
+		* A few individual points sit noticeably above or below their group's line
+		* These are worth noting separately as outliers, but they don't change the overall linear shape of the trend
+	* **Step 5: Temperature encoding
+		* **Overall trend:** 14°C highest throughout; 10°C starts lowest, closes the gap with 18°C by large blade lengths.
+		* At small initial blade lengths, 10°C kelp have a noticeably lower growth rate than 14°C or 18°C kelp
+		* However, the 10°C line rises more steeply than the others, and by the largest blade lengths, 10°C growth rates approach and possibly exceed 18°C
+		* 14°C consistently shows the highest growth rate across the whole range
+* **Disrupted Surface Kelp**
+	* All same points except step 5
+	* **Step 5: Temperature encoding
+		* **Overall trend:** 14°C starts lower than 10°C but overtakes it to become highest; 18°C starts lowest and rises to approach 10°C; 10°C is the least steep
+		* At small initial blade lengths, 18°C kelp have a noticeably lower growth rate than 10°C and 14°C kelp. However, 18°C line rises more steeply, approaching 10°C
+		* Growth rate at 14°C consistently rises, starting lower than 10°C but overtaking 10°C to have the highest growth rate 
+* If initial blade length predicted growth rate exactly the same way, regardless of temperature or surface, all regression lines would have the same slope
+* However, this is not the same, meaning temperature and surface have an influence over this relationship
+* Therefore, the way growth rate ranks across temperatures looks different between natural and disrupted surface kelp
+* For example, 10°C has lower growth rate in natural surface but a little higher growth rate under disrupted surface
+* This visual pattern is consistent with surface treatment changing how temperature affects growth (an interaction), but it hasn't been statistically tested yet 
+
+####### **Conclusions until this point**
+* We have the same number of kelp in t2 as what we started with at t1:
+
+| Temperature | Natural | Disrupted |
+| ----------- | ------- | --------- |
+| 10          | 30      | 15        |
+| 14          | 15      | 15        |
+| 18          | 30      |           |
+* Larger kelp tend to have higher t1-t2 growth rates across temperatures
+* There is an interaction between treatment and the relationship between growth rate and initial blade length
+
+####### **Statistical validations**
+* We now check if our above conclusions are statistically supported
+* **Inference 1:** Larger kelp tend to have higher t1-t2 growth rates across temperatures
+* **Model:** Does the size of a kelp at t1 help explain how fast it grew from t1 to t2?
+	![[Pasted image 20260811124829.png]]
+	* The key line is: initial_length_bl     0.0392    0.005    8.442    0.000    0.030    0.048
+	* **Slope**
+		* 0.0392 is the slope - tells us the direction and size of the relationship between initial blade length and growth rate
+			* This means, for ever additional 1cm of initial blade length, the predicted t1-t2 growth rate increases by ~0.0392cm/day (positive relationship)
+	* **Y intercept**
+		* The y intercept value is 0.2238
+		* This is the predicted growth rate when initial_length_bl = 0
+			* If initial length = 0 cm, then predicted growth rate = 0.2238 cm/day
+		* However, none of the kelp has initial length = 0 cm
+		* Therefore only necessary for defining the regression line
+	* The model therefore has this equation (y = mx + c)
+		* growth_rate = 0.2238 + (0.0392 × initial_blade_length)
+		* If we plug in different lengths, we will get higher growth rates for larger lengths
+		* Therefore, we have proven that: **Larger kelp tended to grow faster during t1→t2**
+	* **R²**
+		* Shows how much variation in growth rate is explained by initial blade length
+		* R² = 0.351
+		* Therefore, 35.1% of the variation in growth rate can be accounted for by initial blade length
+		* Meaning, 64.9% of the variation in growth rate is unexplained at this point
+	* **p value**
+		* How likely the results are if the null hypothesis is true
+		* P>|t| = 0.000
+		* H₀: There is no linear relationship between initial blade length and t1→t2 growth rate
+		* H1: There is a linear relationship between initial blade length and t1→t2 growth rate
+		* p value < 0.05 so we reject the null hypothesis
+		* **Conclusion:** There is strong statistical evidence that initial blade length is associated with t1→t2 growth rate
+	* **95% confidence interval**
+		* We have 2 percentages: 0.025 and 0.975 ([0.025  0.975])
+		* This gives us 95%
+		* At this interval, for the slope, we have [0.030, 0.048]
+		* The estimated slope is 0.0392
+		* The plausible range according to the model is:
+			* 0.030 ───────── 0.0392 ───────── 0.048
+		* This therefore means the value estimated for the slope is 0.0392 with a 95% confidence interval of approximately **0.030 to 0.048**
+		* This entire interval is above zero, hence supporting the conclusion that the relationship is positive
+	* **F statistic**
+		* F-statistic = 71.26
+		* Prob (F-statistic) = 4.88e-14
+	* **No. Observations**
+		* This is the number of kelp that had values for initial_length_bl and growth_rate_t1t2 (134)
+	* **Omnibus, Jarque-Bera, Skew, Kurtosis, Durbin-Watson**
+		* **Diagnostics** that help us determine whether the assumptions behind OLS regression are reasonable
+		* Residual = actual value - predicted value
+		* Example:
+			* Actual growth = 1.2 cm/day
+			* Predicted      = 1.0 cm/day
+			* Residual       = +0.2 cm/day
+		* Omnibus p = 0.592
+		* Jarque-Bera p = 0.583
+		* Skew = -0.108
+		* Kurtosis = 2.617
+	* **Durbin-Watson**
+		* Detects serial correlation
+		* 2 → little autocorrelation
+		* < 2 → positive autocorrelation
+		* 2 → negative autocorrelation
+		* We have 1.283 = some positive correlation
+	* **Overall Conclusion from the model**
+		* Among the 134 Objective I kelp with available t1→t2 growth measurements, larger initial blade length was strongly positively associated with higher t1→t2 growth rate
+		* The estimated increase was approximately **0.039 cm/day in growth rate for every 1 cm increase in initial blade length** (95% CI: 0.030–0.048, p < 0.001)
+		* Initial blade length alone explained approximately **35% of the variation** in t1→t2 growth rate
+		  
