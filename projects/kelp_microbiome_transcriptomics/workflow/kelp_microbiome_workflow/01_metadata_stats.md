@@ -1,117 +1,3 @@
-# Steps for data analysis
-![[Pasted image 20260811103238.png|481]]
-# Choice of plots
-![[Pasted image 20260811112735.png]]
-* Determined by **type of variable** and **questions we're asking**
-* Questions to ask:
-	* How many variables are involved?
-	* What type of variables are they? (continuous or categorical)
-	* What question do we want to answer?
-		* Distribution
-		* Comparison
-		* Relationship
-		* Composition
-	
-
-| Question                                                      | Variables Involved           | Standard plot                     | Example from this project                                                                                        |
-| ------------------------------------------------------------- | ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Distribution of one continuous variable                       | 1 continuous                 | Histogram (or density plot)       | Shape of initial_length_bl overall (how initial_length_bl is distributed among the kelp regardless of treatment) |
-| Compare one continuous variable across categories             | 1 continuous + 1 categorical | Box plot (or violin plot)         | Blade length by treatment group                                                                                  |
-| Relationship between two continuous variables                 | 2 continuous                 | Scatter plot                      | Blade length vs. growth rate                                                                                     |
-| Relationship between two continuous variables, split by group | 2 continuous + 1 categorical | Scatter plot with hue=/col=       | Blade length vs. growth rate, colored by temperature                                                             |
-| Counts/frequency of categoriesv                               | 1 categorical                | Bar plot                          | Number of kelp per treatment group                                                                               |
-| Change over time                                              | 1 continuous + time          | Line plot                         | Blade length across t1→t2→t3→t4 for the same individuals                                                         |
-| Composition / proportion of a whole                           | categorical parts of a whole | Stacked bar or pie (rarely ideal) | Proportion died vs. survived per treatment                                                                       |
-## Reading a multi-color scatter plot
-* Has 5 dimensions of info:
-	* x position
-	* y position
-	* Color
-	* Shape
-	* Regression line
-* Need to go through the layers in order
-* We will use this example:
-![[Pasted image 20260806095505.png]]
-* **Step 1: Name every visual channel and what it represents**
-	* x axis = initial blade length (continuous)
-	* y axis = t1 to t2 growth rate (continuous)
-	* Color = temperature (10/14/18°C)
-	* Marker shape = surface (● natural, ✕ disrupted)
-	* Black line = a fitted trend, not raw data
-	* Therefore, the plot answers questions at multiple levels:
-		* By temperature alone
-		* By surface alone
-		* By temperature and surface combined
-	* **Phrase:** This plot has initial blade length on the x axis, growth rate at t1 and t2 on the y axis and displays both temperature as color and surface as shapes
-* **Step 2: Read the overall trend first, ignoring every group**
-	* Look at the trend line only
-	* This answers - Is there any relationship?
-	* Here, the line rises from left to right, indicating positive association
-	* **Phrase:** At a glance, there appears to be a positive association between initial blade length and growth rate at t1 and t2
-* **Step 3: Understand what the gray band means**
-	* The shaded region is a confidence band around the regression line's estimate
-	* It reflects uncertainty in where the true average line sits, not the spread of the individual data points around the line
-	* The band seems to widen at the edges (low and high blade lengths) reflects that there are fewer data points there, hence the line position is less certain in these regions
-	* **Phrase:** The shaded band reflects uncertainty in the fitted trend within the edges since we have fewer data points but is more confident in the middle due to more data points
-* **Step 4: Assess linearity visually, don't just declare it**
-	* Does the line stay "close" to the data points for the entire length of the x-axis, or does it only fit well in the middle and drift away from the dots at the ends?
-		* If a single straight line looks like a decent fit _everywhere_ (left side, middle, right side) → roughly linear
-		- If the data points clearly hug the bottom, then swoop upward steeply, then flatten out at the top (like a rainbow or an "S" shape) → not linear, because no single straight line could hug that shape from end to end
-		![[Pasted image 20260806114412.png]]
-	* **Phrase:** The relationship appears approximately linear across the observed range, with no obvious curvature
-* **Step 5: Bring in ONE encoding at a time - color first**
-	* scan the whole x-axis and ask whether the color groups maintain a consistent vertical offset from each other across the _entire_ range, not just at one spot
-	* **Question**: 
-		* Do blue (10°C), orange (14°C), and green (18°C) points consistently occupy the same _vertical bands_ above/below each other? 
-		* This tells us whether temperature shifts growth rate _independent of_ blade length
-		* If the answer stays the same as you slide all the way across, that's a real, consistent group difference
-		* If the answer flips partway through (green is below blue on the left, but above blue on the right), that's not a consistent effect (this indicates an **interaction**) 
-	* **Phrase:** Holding blade length roughly constant, growth rate at 10°C tends to sit lower than growth rates at 14 and 18°C for natural surface kelp, while growth rate at 18°C tends to sit lower than at 14°C and 10°C for disrupted kelp 
-* **Step 6: Bring in the second encoding - shape**
-	* Isolate shape only, ignoring color
-	* Do circles (natural) sit consistently above/below x's (disrupted)?
-	* **Phrase:** Natural surface kelp tend to sit above disrupted kelp at similar x values (natural surface kelp tend to have a higher growth rate)
-* **Step 7: Combine both encodings**
-	* Look at color and shape _together_
-	* e.g., "green x's" (18°C disrupted) versus "green dots" (18°C natural) specifically, versus "blue x's" (10°C disrupted) versus "blue dots" (10°C natural)
-	* This is where we actually see whether the surface effect _depends on_ temperature 
-	* **Phrase:** At 10°C, natural surface kelp appears to have a lower growth rate, compared to disrupted kelp. This pattern, however isn't consistent across temperatures, with natural surface kelp appearing to have a higher growth rate than disrupted kelp at higher temperatures (14 and 18°C)
-* **Step 8: Outliers - flag but don't let them drive the story**
-	* Note extreme points (e.g., the two points near 2.0-2.25 cm/day growth) explicitly
-	* Describe them as individual observations, not as evidence of a group-level pattern
-	* **Phrase:** Two individual growth rates, near 2.0-2.25 cm/day, stand out as unusually high, both in natural surface kelp, at 10 and 18°C
-* **Step 9: State the scope and limits explicitly**
-	* Close every visual read with an honest scope statement 
-	* **Phrases:**
-		* This is a visual/descriptive pattern only; it has not yet been statistically tested
-		* This plot suggests there is an overall linear positive relationship between initial blade length and growth rate at t1 and t2, which is also temperature and surface dependent and can be evaluated by a 
-		* Correlation visible here does not establish which variable is driving the other
-	
-
-# Statistical tests/models and how to pick one
-* **The right test is determined by:**
-	1.  what type each variable is
-	2. What question shape is being asked
-* **Step 1: Classify the outcome (dependent variable)**
-	* For **continuous variables** like growth rate, **regression-based tests** are used
-	* For **categorical variables** like survival, we can use **logistic regression or chi square tests**
-	* For count e.g., number of events, we use **Poisson-type models**
-* **Step 2: Classify predictors**
-	* **Continuous predictor** e.g., blade length → **correlation** or **regression**
-	* **Categorical predictor** e.g., temperature groups, surface → **group-comparison tests** (t-test, ANOVA) 
-	* **Mix of both, plus interactions** → this is where you land, and it's why you've been using `smf.ols` formulas rather than a "named" test
-
-| Question                                                               | Outcome Type | Predictor Type           | Standard Test                                      |
-| ---------------------------------------------------------------------- | ------------ | ------------------------ | -------------------------------------------------- |
-| Do two groups differ in a continuous measure?                          | Continuous   | 1 categorical, 2 levels  | t-test                                             |
-| Do 3+ groups differ in a continuous measure?                           | Continuous   | 1 categorical, 3+ levels | ANOVA                                              |
-| Do two continuous variables move together?                             | Continuous   | Continuous               | Correlation (Pearson/Spearman)                     |
-| Does a continuous predictor explain/predict a continuous outcome?      | Continuous   | Continuous               | Simple linear regression                           |
-| Does the outcome depend on multiple predictors, possibly interacting?  | Continuous   | Mix, with interactions   | Multiple regression (what you're doing)            |
-| Same as above, but individuals are grouped (tanks) and not independent | Continuous   | Mix, with interactions   | Mixed-effects regression (random effect for tank)  |
-| Does a categorical outcome (survived/died) depend on predictors?       | Binary       | Any                      | Logistic regression                                |
-| Are two categorical variables associated?                              | Categorical  | Categorical              | Chi-square test                                    |
-
 # Question 1: Does initial morphological characteristics predict subsequent growth rate, and does this relationship differ among treatments? We follow data analysis steps outlined above
 ### The Data
 * Data = initial blade length and growth rate (continuous)
@@ -364,7 +250,7 @@
 * However, this is not the same, meaning temperature and surface have an influence over this relationship
 * Therefore, the way growth rate ranks across temperatures looks different between natural and disrupted surface kelp
 * For example, 10°C has lower growth rate in natural surface but a little higher growth rate under disrupted surface
-* This visual pattern is consistent with surface treatment changing how temperature affects growth (an interaction), but it hasn't been statistically tested yet 
+* This visual pattern is consistent with surface treatment changing how temperature affects growth (**an interaction**), but it hasn't been statistically tested yet 
 
 ####### **Conclusions until this point**
 * We have the same number of kelp in t2 as what we started with at t1:
@@ -379,68 +265,222 @@
 
 ####### **Statistical validations**
 * We now check if our above conclusions are statistically supported
-* **Inference 1:** Larger kelp tend to have higher t1-t2 growth rates across temperatures
-* **Model:** Does the size of a kelp at t1 help explain how fast it grew from t1 to t2?
-	![[Pasted image 20260811124829.png]]
-	* The key line is: initial_length_bl     0.0392    0.005    8.442    0.000    0.030    0.048
-	* **Slope**
-		* 0.0392 is the slope - tells us the direction and size of the relationship between initial blade length and growth rate
-			* This means, for ever additional 1cm of initial blade length, the predicted t1-t2 growth rate increases by ~0.0392cm/day (positive relationship)
-	* **Y intercept**
-		* The y intercept value is 0.2238
-		* This is the predicted growth rate when initial_length_bl = 0
-			* If initial length = 0 cm, then predicted growth rate = 0.2238 cm/day
-		* However, none of the kelp has initial length = 0 cm
-		* Therefore only necessary for defining the regression line
-	* The model therefore has this equation (y = mx + c)
-		* growth_rate = 0.2238 + (0.0392 × initial_blade_length)
-		* If we plug in different lengths, we will get higher growth rates for larger lengths
-		* Therefore, we have proven that: **Larger kelp tended to grow faster during t1→t2**
-	* **R²**
-		* Shows how much variation in growth rate is explained by initial blade length
-		* R² = 0.351
-		* Therefore, 35.1% of the variation in growth rate can be accounted for by initial blade length
-		* Meaning, 64.9% of the variation in growth rate is unexplained at this point
-	* **p value**
-		* How likely the results are if the null hypothesis is true
-		* P>|t| = 0.000
-		* H₀: There is no linear relationship between initial blade length and t1→t2 growth rate
-		* H1: There is a linear relationship between initial blade length and t1→t2 growth rate
-		* p value < 0.05 so we reject the null hypothesis
-		* **Conclusion:** There is strong statistical evidence that initial blade length is associated with t1→t2 growth rate
-	* **95% confidence interval**
-		* We have 2 percentages: 0.025 and 0.975 ([0.025  0.975])
-		* This gives us 95%
-		* At this interval, for the slope, we have [0.030, 0.048]
-		* The estimated slope is 0.0392
-		* The plausible range according to the model is:
-			* 0.030 ───────── 0.0392 ───────── 0.048
-		* This therefore means the value estimated for the slope is 0.0392 with a 95% confidence interval of approximately **0.030 to 0.048**
-		* This entire interval is above zero, hence supporting the conclusion that the relationship is positive
-	* **F statistic**
-		* F-statistic = 71.26
-		* Prob (F-statistic) = 4.88e-14
-	* **No. Observations**
-		* This is the number of kelp that had values for initial_length_bl and growth_rate_t1t2 (134)
-	* **Omnibus, Jarque-Bera, Skew, Kurtosis, Durbin-Watson**
-		* **Diagnostics** that help us determine whether the assumptions behind OLS regression are reasonable
-		* Residual = actual value - predicted value
-		* Example:
-			* Actual growth = 1.2 cm/day
-			* Predicted      = 1.0 cm/day
-			* Residual       = +0.2 cm/day
-		* Omnibus p = 0.592
-		* Jarque-Bera p = 0.583
-		* Skew = -0.108
-		* Kurtosis = 2.617
-	* **Durbin-Watson**
-		* Detects serial correlation
-		* 2 → little autocorrelation
-		* < 2 → positive autocorrelation
-		* 2 → negative autocorrelation
-		* We have 1.283 = some positive correlation
-	* **Overall Conclusion from the model**
-		* Among the 134 Objective I kelp with available t1→t2 growth measurements, larger initial blade length was strongly positively associated with higher t1→t2 growth rate
-		* The estimated increase was approximately **0.039 cm/day in growth rate for every 1 cm increase in initial blade length** (95% CI: 0.030–0.048, p < 0.001)
-		* Initial blade length alone explained approximately **35% of the variation** in t1→t2 growth rate
-		  
+* **Question 1:** Is initial blade length associated with t1→t2 growth rate?
+	* H₀ = Initial blade length is not associated with t1→t2 growth rate
+	* H₁ = Initial blade length is associated with t1→t2 growth rate
+	* **Model:** Does the size of a kelp at t1 help explain how fast it grew from t1 to t2?
+		![[Pasted image 20260811124829.png]]
+		* The key line is: initial_length_bl     0.0392    0.005    8.442    0.000    0.030    0.048
+		* **Slope**
+			* 0.0392 is the slope - tells us the direction and size of the relationship between initial blade length and growth rate
+				* This means, for ever additional 1cm of initial blade length, the predicted t1-t2 growth rate increases by ~0.0392cm/day (positive relationship)
+		* **Y intercept**
+			* The y intercept value is 0.2238
+			* This is the predicted growth rate when initial_length_bl = 0
+				* If initial length = 0 cm, then predicted growth rate = 0.2238 cm/day
+			* However, none of the kelp has initial length = 0 cm
+			* Therefore only necessary for defining the regression line
+		* The model therefore has this equation (Y ≈ β0 + β1 X)
+			* growth_rate = 0.2238 + (0.0392 × initial_blade_length)
+			* If we plug in different lengths, we will get higher growth rates for larger lengths
+			* Therefore, we have proven that: **Larger kelp tended to grow faster during t1→t2**
+		* **R²**
+			* Shows how much variation in growth rate is explained by initial blade length
+			* R² = 0.351
+			* Therefore, 35.1% of the variation in growth rate can be accounted for by initial blade length
+			* Meaning, 64.9% of the variation in growth rate is unexplained at this point
+		* **p value**
+			* How likely the results are if the null hypothesis is true
+			* P>|t| = 0.000
+			* H₀: There is no linear relationship between initial blade length and t1→t2 growth rate
+			* H1: There is a linear relationship between initial blade length and t1→t2 growth rate
+			* p value < 0.05 so we reject the null hypothesis
+			* **Conclusion:** There is strong statistical evidence that initial blade length is associated with t1→t2 growth rate
+		* **95% confidence interval**
+			* We have 2 percentages: 0.025 and 0.975 ([0.025  0.975])
+			* This gives us 95%
+			* At this interval, for the slope, we have [0.030, 0.048]
+			* The estimated slope is 0.0392
+			* The plausible range according to the model is:
+				* 0.030 ───────── 0.0392 ───────── 0.048
+			* This therefore means the value estimated for the slope is 0.0392 with a 95% confidence interval of approximately **0.030 to 0.048**
+			* This entire interval is above zero, hence supporting the conclusion that the relationship is positive
+		* **F statistic**
+			* F-statistic = 71.26
+			* Prob (F-statistic) = 4.88e-14
+			* The F-statistic compares variation explained by the model with variation left unexplained by the model
+				* Is the variation explained by the model larger compared to the variation the model fails to explain?
+				* =variation explained/variation remaining
+				* The calculation uses **mean squares**, which account for degrees of freedom
+				* Large f statistic means the model explains substantially more variation than we'd expect relative to the unexplained variation
+		* **No. Observations**
+			* This is the number of kelp that had values for initial_length_bl and growth_rate_t1t2 (134)
+		* **Omnibus, Jarque-Bera, Skew, Kurtosis, Durbin-Watson**
+			* **Diagnostics** that help us determine whether the assumptions behind OLS regression are reasonable
+			* Residual = actual value - predicted value
+			* Example:
+				* Actual growth = 1.2 cm/day
+				* Predicted      = 1.0 cm/day
+				* Residual       = +0.2 cm/day
+			* Omnibus = 1.048
+				* Assumption: residuals are approximately **normally distributed**
+				* Do the residuals show evidence of substantial non-normality?
+				* H₀: residuals are approximately normally distributed
+				* Since Omnibus p = 0.592,  We do not have evidence of substantial non-normality from this test
+				* Not proof of perfect normality
+			* Omnibus p = 0.592
+			* Jarque-Bera p = 0.583
+				* Another test of residual normality
+				* We don't have evidence that the residuals substantially deviate from normality according to the Jarque–Bera test
+				* Not proof of perfect normality
+			* Skew = -0.108
+				![[Pasted image 20260812113556.png|499]]
+				* Residual skewness = -0.108 which is closer to 0, meaning the residuals are approximately symmetrical, with a very slight tendency toward a left tail
+			* Kurtosis = 2.617
+				* Describes the shape of the tails and concentration of the distribution
+				* A normal distribution has a kurtosis of approximately 3
+				* 2.617 is close to 3 so there's no obvious extreme-tail problem here
+		* **Durbin-Watson**
+			* Detects serial correlation
+			* 2 → little autocorrelation
+			* < 2 → positive autocorrelation
+			* 2 → negative autocorrelation
+			* We have 1.283 = some positive correlation
+		* **Overall Conclusion from the model**
+			* There is strong statistical evidence of a positive association between initial blade length and t1→t2 growth rate. 
+			* The estimated increase is approximately **0.039 cm/day in growth rate for every 1 cm increase in initial blade length** (95% CI: 0.030–0.048, p < 0.001)
+			* Initial blade length alone explained approximately **35% of the variation** in t1→t2 growth rate
+  * **Question 2:** Does the effect of temperature on t1→t2 growth rate depend on surface treatment, after accounting for initial blade length?
+		  * **Temperature effect:** Does growth differ with temperature?
+		  * **Surface effect:** Does growth differ between natural and disrupted surfaces?
+		  * **Temperature × surface interaction:** Does the effect of surface depend on temperature?
+		  * Initial blade length is associated with t1-t2 growth rate across temperatures, with a surface interaction 
+		  * H₀ = There is no temperature × surface interaction on t1→t2 growth rate
+		  * H₁ = The effect of temperature on growth rate **depends on surface treatment**
+	  * **Model:** size + treatments - Do treatments explain additional variation?
+		  * Here, we have categorical predictors and a reference group
+		  * **Assumption:** The effect of initial blade length on growth rate is the same across all temperature/surface combinations
+		  * growth_rate_t1t2 ~ initial_length_bl
+                     + temperature
+                     + surface
+                     + temperature × surface
+		![[Pasted image 20260812211404.png|665]]
+	  * **Reference group** = 10°C + disrupted
+	  * **Categorical predictors:**
+		  * treat_temp:
+			  * 10, 14, 18
+		  * treat_surface:
+			  * `disr, nat`
+	  * **R²** = 0.441
+		  * The model explains approximately **44.1% of the observed variation** in t1→t2 growth rate using initial blade length, temperature, surface, and their temperature × surface interaction
+		  * R² never decreases when we add more predictors to a model
+		  * Even if the added predictor is useless, it will increase, giving a false impression  of the explained variation
+	* **Adjusted R²** = 0.415
+		* Penalizes the model for adding more predictors
+		* This means, after accounting for the number of predictors in the model, the model explains about **41.5%** of the variation
+	  * **F statistic** = 16.72
+		  * Does the model as a whole explain significantly more variation than a model with no predictors?
+		  * p = 3.78 × 10⁻¹⁴
+		  * There is **very strong evidence that the model as a whole is useful for explaining growth-rate variation**
+	  * **Initial blade length slope** = 0.0338
+		  * For every additional 1 cm of initial blade length, the predicted t1→t2 growth rate increases by approximately 0.0338 cm/day, **holding temperature and surface treatment constant**
+		  * This association is positive because 0.0338 > 0
+	  * **Initial blade length p value** = 0.000
+		  * There is strong statistical evidence that initial blade length is positively associated with t1→t2 growth rate **after accounting for temperature and surface treatment**
+	  * **Y intercept** = 0.3474
+		  * The model therefore has the equation: growth_rate = 0.3474 + (0.0338 × initial_blade_length) for the **reference treatment (10°C + disrupted)**
+		* This means when **temperature is 10°C** and **surface treatment is disrupted**, the predicted growth rate **when initial blade length is 0 cm** is 0.3474 cm/day
+	  * **The coefficient at 14°C (temperature effect at 14°C)** = 0.1552
+		  * This means, at the reference surface treatment (**disrupted**) and at a given initial blade length, the predicted growth rate at 14°C is **0.1552 cm/day higher than at 10°C**
+	  * **The coefficient at 18°C (temperature effect at 18°C)** = -0.1821
+		  * This means, at the reference surface treatment (**disrupted**) and at a given initial blade length, the predicted growth rate at 18°C is **0.1821 cm/day lower than at 10°C**
+	  * **The coefficient for natural surface (natural surface effect)** = -0.1233
+		  * This means, at 10°C, natural-surface kelp have an estimated growth rate **0.1233 cm/day lower than disrupted-surface kelp**, for a given initial blade length
+	  * **Interactions (temperature × surface interaction):**
+		  * How much the effect of natural vs disrupted surface changes when we move from the reference temperature to the given temperature
+		  * 14°C × natural = +0.2249
+			  * The growth rate difference between natural and disrupted surfaces is estimated to be **0.2249 cm/day higher at 14°C than at 10°C**
+		  * 18°C × natural = +0.2883
+			  * The growth rate difference between natural and disrupted surfaces is estimated to be **0.2883 cm/day higher at 18°C than at 10°C**
+	  * **Overall equation for the model:** growth rate = 0.3474 + (0.0338 × initial size) + temperature effect + surface effect + (temperature × surface interaction)
+	  * **Equations for each category:**
+		  * **10°C + disrupted:**
+			  * There are no temperature/surface adjustments
+			  * growth = 0.3474 + (0.0338 × size)
+		  * **14°C + disrupted:**
+			  * growth = 0.3474 + (0.0338 × size) + 0.1552 
+		  * **18°C + disrupted:**
+			  * growth = 0.3474 + (0.0338 × size) - 0.1821
+		* **10°C + natural:**
+			* growth = 0.3474 + (0.0338 × size) - 0.1233
+		*  **14°C + natural:**
+			* growth = 0.3474 + (0.0338 × size) + 0.1552 - 0.1233 + 0.2249
+		* **18°C + natural:**
+			* growth = 0.3474 + (0.0338 × size) - 0.1233 - 0.1233 + 0.2883
+	* **Equations summary:**
+		* 10 disr:  growth = 0.3474 + 0.0338 × size
+		* 14 disr:  growth = 0.5026 + 0.0338 × size
+		* 18 disr:  growth = 0.1653 + 0.0338 × size
+		* 10 nat:   growth = 0.2241 + 0.0338 × size
+		* 14 nat:   growth = 0.6042 + 0.0338 × size
+		* 18 nat:   growth = 0.3303 + 0.0338 × size
+	* **N/B:** slope is constant (0.0338) because this model assumes **the relationship between initial size and growth rate is the same across treatments**
+		* The plot may show different lines vertically, but this model assumes they are essentially **parallel**
+	* **Overall conclusion:** 
+		* Initial blade length was positively associated with t1–t2 growth rate (β = 0.0338 cm/day per cm, p < 0.001), after accounting for temperature, surface treatment, and their interaction
+		* The model explained 44.1% of the variation in t1→t2 growth rate (R² = 0.441)
+		* **Adjusted R² = 0.415:** After accounting for the number of predictors in the model, the adjusted proportion of explained variation is 41.5%
+		* There was evidence of a temperature × surface interaction at 18°C (β = 0.2883, p = 0.048), relative to the 10°C reference condition
+		* There was no strong statistical evidence of a temperature × surface interaction at 14°C relative to 10°C (β = 0.2249, p = 0.189)
+* **Question 3:** Does the relationship between initial size and growth rate change depending on temperature, surface, or the combination of temperature and surface?
+	* H₀ = The relationship between initial blade length and t1→t2 growth rate does not differ among treatments
+	  * H₁ = The relationship between initial blade length and t1→t2 growth rate differs among treatments
+	* Model
+		* Allows the **slope  to change depending on temperature and surface**:
+			* initial_length × temperature
+			* initial_length × surface
+			* initial_length × temperature × surface
+			* growth_rate_t1t2 ~ initial_length_bl * C(treat_temp) * C(treat_surface):
+				* (initial length) + (temperature) + (surface) + (initial length × temperature) + (initial length × surface) + (temperature × surface) + (initial length × temperature × surface)
+		![[Pasted image 20260815164544.png]]
+	* **Reference group** = 10°C + disrupted
+		  * **Categorical predictors:**
+			  * treat_temp:
+				  * 10, 14, 18
+			  * treat_surface:
+				  * `disr, nat`
+		  * **R²** = 0.468
+			  * The model explains approximately 46.8% of the variation in t1→t2 growth rate using initial blade length, temperature, surface, and their **two-way and three-way interactions**
+				  * **Two-way interactions:**
+					  * initial length × temperature
+					  * initial length × surface
+					  * temperature × surface
+				  * **Three-way interaction:**
+					  * initial length × temperature × surface
+	* **Adjusted R²** = 0.420
+		* After accounting for the number of predictors in the model, the adjusted R² indicates that approximately 42.0% of the variation in growth rate is explained by the model
+	  * **F statistic** = 9.761
+		  * p = 1.69 × 10^-12
+		  * There is **very strong evidence that the model as a whole is useful for explaining growth-rate variation**
+	  * **Initial blade length slope** = 0.0185
+		  * At the **reference temperature and reference surface**, each additional 1 cm of initial blade length is associated with an estimated 0.0185 cm/day higher t1→t2 growth rate
+		  * N/B: This slope is not for every treatment. It is the slope for the reference treatment only (10°C + disrupted surface)
+	  * **Initial blade length p value** = 0.240
+		  * This p-value asks whether the initial-length slope is different from zero for the reference treatment combination (10°C + disrupted surface)
+		  * There is no statistical evidence that the initial-length slope differs from zero for the reference treatment combination (10°C + disrupted surface), β0 = 0.0185, p = 0.240
+	  * **Y intercept** = 0.3474
+		  * The model therefore has the equation: growth_rate = 0.3474 + (0.0338 × initial_blade_length) for the **reference treatment (10°C + disrupted)**
+		* This means when **temperature is 10°C** and **surface treatment is disrupted**, the predicted growth rate **when initial blade length is 0 cm** is 0.3474 cm/day
+	  * **The coefficient at 14°C (temperature effect at 14°C)** = 0.1552
+		  * This means, at the reference surface treatment (**disrupted**) and at a given initial blade length, the predicted growth rate at 14°C is **0.1552 cm/day higher than at 10°C**
+	  * **The coefficient at 18°C (temperature effect at 18°C)** = -0.1821
+		  * This means, at the reference surface treatment (**disrupted**) and at a given initial blade length, the predicted growth rate at 18°C is **0.1821 cm/day lower than at 10°C**
+	  * **The coefficient for natural surface (natural surface effect)** = -0.1233
+		  * This means, at 10°C, natural-surface kelp have an estimated growth rate **0.1233 cm/day lower than disrupted-surface kelp**, for a given initial blade length
+	  * **Interactions (temperature × surface interaction):**
+		  * How much the effect of natural vs disrupted surface changes when we move from the reference temperature to the given temperature
+		  * 14°C × natural = +0.2249
+			  * The growth rate difference between natural and disrupted surfaces is estimated to be **0.2249 cm/day higher at 14°C than at 10°C**
+		  * 18°C × natural = +0.2883
+			  * The growth rate difference between natural and disrupted surfaces is estimated to be **0.2883 cm/day higher at 18°C than at 10°C**
+	  * **Overall equation for the model:** growth rate = 0.3474 + (0.0338 × initial size) + temperature effect + surface effect + (temperature × surface interaction)
